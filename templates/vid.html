@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="Display Webcam Stream" name="title">
+<title>Display Webcam Stream</title>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+
+
+
+
+<style>
+    body {
+      margin: 30px;
+    }
+
+    h1 {
+      font-family: sans-serif;
+      color: #666;
+    }
+
+    #container {
+      width: 400px;
+      height: 300px;
+      border: 10px #333 solid;
+    }
+
+    #videoElement {
+      width: 400px;
+      height: 300px;
+      background-color: #666;
+    }
+    
+    button {
+      margin-top: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 5px;
+      background-color: white;
+      border: 5px solid black;
+    }
+
+    button:hover {
+      background-color: yellow;
+    }
+
+    button:active {
+      background-color: yellowgreen;
+    }
+  </style>
+</head>
+<body>
+<h1>Webcam Stream</h1>
+<div id="container">
+<video autoplay="true" id="videoElement">
+</video>
+</div>
+<button id="stop">Stop Video</button>
+<div class = 'video'>
+    <img id="image">
+</div>
+<script>
+
+    var socket1 = io();
+
+    var video = document.querySelector("#videoElement");
+    video.width=400;
+    video.height=300;
+
+
+    var stopVideo = document.querySelector("#stop");
+
+    if (navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function (stream) {
+
+
+          video.srcObject = stream;
+
+          video.play();
+
+          
+
+        
+          
+        })
+        .catch(function (err0r) {
+          console.log("Something went wrong!");
+        });
+    }
+      const FPS=30;
+
+      
+
+      setInterval( ()=>{
+
+      const cnv = document.createElement('canvas');
+      cnv.width = video.width;
+      cnv.height = video.height;
+      var ctx = cnv.getContext('2d');
+      ctx.drawImage(video, 0,0,400,300);
+
+      var data = cnv.toDataURL('image/png');
+      var type = "image/png";
+
+      data = data.replace('data:' + type + ';base64,', '');
+
+      socket1.emit('catch-frame', data);
+    },400);
+
+      // data = data.replace('data:' + type + ';base64,', '');
+
+
+
+    stopVideo.addEventListener("click", stop, false);
+
+    function stop(e) {
+      var stream = video.srcObject;
+      var tracks = stream.getTracks();
+
+      for (var i = 0; i < tracks.length; i++) {
+        var track = tracks[i];
+        track.stop();
+      }
+
+      video.srcObject = null;
+    }
+
+
+
+    socket1.on('response_back', function(image){
+        const image_id = document.getElementById('image');
+        image_id.src = image;
+    });
+
+  </script>
+</body>
+</html>
