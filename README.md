@@ -11,8 +11,6 @@ the frame was processed using pre-trained HOG detectors to detect blinking.**
 
 **If blinking was detected, a message was _broadcasted_ and when received by the first client, triggered the _jump_ action.**
 
-### All the things considered, the back-end for this application was the toughest to design.
-
 
 ##### Click the link below to watch the application in play.
 <a href="https://drive.google.com/file/d/1-Anuv3tNl62DBRgsNjl0o2kfL5LXJrhJ/view?usp=sharing">Click for Video</a>
